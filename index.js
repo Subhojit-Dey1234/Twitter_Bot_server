@@ -1,3 +1,4 @@
+require("dotenv").config();
 const path = require("path");
 const express = require("express");
 const mongoos = require("mongoose");
@@ -20,4 +21,4 @@ const VideoList = require('./api/VideoList')
 
 app.use('/',VideoList)
 
-app.listen(5000);
+app.listen(process.env.PORT || 5000);

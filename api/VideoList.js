@@ -1,10 +1,19 @@
 const VideoList = require('../models/Videoslist.js')
 const router = require("express").Router();
+const mongoose = require('mongoose');
+const {Types: {ObjectId}} = mongoose;
+const validateObjectId = (id) => ObjectId.isValid(id) && (new ObjectId(id)).toString() === id;
+
 
 router.get('/:id',async(req,res)=>{
     try{
-        let video = await VideoList.findById(req.params.id)
-        return res.json(video)
+        if(validateObjectId(req.params.id) === false){
+            console.log("asdnasdnaksdn")
+            return res.status(400).json("The Object Id is not valid")
+        }
+        let video = await VideoList.find({_id : req.params.id})
+        if(video.length === 0) return res.status(404)
+        return res.json(video[0])
     }
     catch(err){
         return res.status(404)

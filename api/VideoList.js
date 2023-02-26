@@ -1,39 +1,22 @@
-const VideoList = require('../models/Videoslist.js')
 const router = require("express").Router();
-const mongoose = require('mongoose');
-const {Types: {ObjectId}} = mongoose;
-const validateObjectId = (id) => ObjectId.isValid(id) && (new ObjectId(id)).toString() === id;
+let token = process.env.BEARER_TOKEN
 
+const axios = require('axios')
 
 router.get('/:id',async(req,res)=>{
+    const { id } = req.params
     console.log(req.params.id)
     try{
-        if(validateObjectId(req.params.id) === false){
-            console.log("asdnasdnaksdn")
-            return res.status(400).json("The Object Id is not valid")
-        }
-        let video = await VideoList.find({_id : req.params.id})
-        console.log(video)
-        if(video.length === 0) return res.sendStatus(404).json("Not Found")
-        return res.json(video[0])
+        let data = await axios.get(`https://api.twitter.com/2/tweets/${id}?tweet.fields=attachments,public_metrics,author_id,in_reply_to_user_id,conversation_id&expansions=attachments.media_keys&media.fields=variants,preview_image_url&user.fields=username`,{
+            headers : {
+                Authorization : `Bearer ${token}`
+            }
+        })
+        return res.status(200).json(data.data)
     }
     catch(err){
-        return res.status(404)
+        return res.status(500)
     }
 })
-
-
-router.post('/',async(req,res)=>{
-    try{
-        console.log(req.body)
-        let video = await VideoList(req.body)
-        video.save()
-        res.status(201).send(video._id)
-    }
-    catch(err){
-        res.status(401).json("Error while posting")
-    }
-})
-
 
 module.exports = router

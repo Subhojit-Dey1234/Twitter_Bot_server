@@ -5,7 +5,6 @@ const axios = require('axios')
 
 router.get('/:id',async(req,res)=>{
     const { id } = req.params
-    console.log(req.params.id)
     try{
         let data = await axios.get(`https://api.twitter.com/2/tweets/${id}?tweet.fields=attachments,public_metrics,author_id,in_reply_to_user_id,conversation_id&expansions=attachments.media_keys&media.fields=variants,preview_image_url&user.fields=username`,{
             headers : {
